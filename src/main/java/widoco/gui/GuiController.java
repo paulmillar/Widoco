@@ -17,6 +17,7 @@
 package widoco.gui;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -103,6 +105,7 @@ public final class GuiController {
 
 		// get the arguments
 		String outFolder = "myDocumentation" + (new Date().getTime()), ontology = "", rb = null, configOutFile = null;
+		String xslt = null;
 		List<String> imports = new ArrayList<>();
 		boolean isFromFile = false, oops = false, rewriteAll = false, getOntoMetadata = true, useW3Cstyle = true,
 				includeImportedOntologies = false, htAccess = false, webVowl = false, errors = false, licensius = false,
@@ -206,6 +209,10 @@ public final class GuiController {
 			case "-excludeProvenance":
 				excludeProvenance = true;
 				break;
+			case "-xsltFile":
+				xslt = args[i + 1];
+				i++;
+				break;
 			case "--help":
 				System.out.println(Constants.HELP_TEXT);
 				return;
@@ -255,6 +262,7 @@ public final class GuiController {
 		this.config.setDisplaySerializations(displaySerializations);
 		this.config.setDisplayDirectImportsOnly(displayDirectImportsOnly);
 		this.config.setIncludeAllSectionsInOneDocument(uniteSections);
+		this.config.setXslStyleSheet(Optional.ofNullable(xslt).map(File::new));
 		if (excludeIntroduction) {
 			this.config.setIncludeIntroduction(false);
 		}

@@ -37,6 +37,8 @@ import widoco.entities.Ontology;
 import widoco.gui.GuiController;
 import licensius.GetLicense;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * class for storing all the details to generate the ontology. This will be a
  * singleton object that will be modified until the generate command is given.
@@ -81,6 +83,7 @@ public class Configuration {
 	private String referencesPath;
 	private String googleAnalyticsCode = null;
 	private String contextURI; // not added with an ontology because it's independent
+	private Optional<File> xslStyleSheet = Optional.empty();
 
 	/**
 	 * Property for including an ontology diagram (future work)
@@ -184,6 +187,7 @@ public class Configuration {
 		contextURI = "";
 		includeAllSectionsInOneDocument = false;
 		introText = "";
+		xslStyleSheet = Optional.empty();
 		initializeOntology();
 	}
 
@@ -1460,5 +1464,14 @@ public class Configuration {
 
 	public void setIntroText(String introText) {
 		this.introText = introText;
+	}
+
+	public Optional<File> getXslStyleSheet() {
+		return xslStyleSheet;
+	}
+
+	public void setXslStyleSheet(Optional<File> stylesheet) {
+		requireNonNull(stylesheet);
+		xslStyleSheet = stylesheet;
 	}
 }

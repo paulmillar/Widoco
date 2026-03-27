@@ -68,7 +68,10 @@ public class LODEGeneration {
 			// we have stored the ontology locally
 			content = parseImports(c.isUseImported(), c.getMainOntology().getOWLAPIOntologyManager(),
 					c.getMainOntology().getOWLAPIModel());
-			content = applyXSLTTransformation(content, c.getOntologyURI(), lang, lodeResources);
+
+			File defaultStylesheet = new File(lodeResources, "extraction.xsl");
+			File activeStylesheet = c.getXslStyleSheet().orElse(defaultStylesheet);
+			content = applyXSLTTransformation(content, c.getOntologyURI(), lang, activeStylesheet, defaultStylesheet);
 			return (content);
 		} catch (OWLOntologyStorageException | TransformerException | UnsupportedEncodingException e) {
 			logger.error("Error while applying LODE. Error while applying the XLS file: " + e.getMessage());
@@ -302,17 +305,21 @@ public class LODEGeneration {
 	// }
 	// }
 
-	private static String applyXSLTTransformation(String source, String ontologyUrl, String lang, File resourcesFile)
+	private static String applyXSLTTransformation(String source,
+			String ontologyUrl, String lang, File activeStylesheet,
+			File defaultStylesheet)
 			throws TransformerException, UnsupportedEncodingException {
 		TransformerFactory tfactory = new net.sf.saxon.TransformerFactoryImpl();
 
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		Transformer transformer = tfactory
-				.newTransformer(new StreamSource(resourcesFile.getPath() + File.separator + "extraction.xsl"));
+				.newTransformer(new StreamSource(activeStylesheet));
 
 		// transformer.setParameter("css-location", "");
 		transformer.setParameter("lang", lang);
 		transformer.setParameter("ontology-url", ontologyUrl);
+		transformer.setParameter("default-stylesheet-path",
+			defaultStylesheet.getAbsolutePath());
 		// transformer.setParameter("source", cssLocation + "source");
 
 		StreamSource inputSource = new StreamSource(new StringReader(source));
